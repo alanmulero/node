@@ -7,6 +7,13 @@ server.use((req,res, next) =>{
     console.log('Requisição Chamada!');
     return next();
 })
+// Usando um missleware para validar o metodo post, verificando se um parametro foi passado.
+function checkCurso(req, res, next){
+    if(!req.body.name){
+        return res.status(400).json({error: "Nome do curso é obrigatorio."});
+    }return next;
+
+}
 const cursos = ['java','HTML','CSS','JS','Node'];
 // Trasendo um curso pelo index
 server.get('/cursos/:index', (req, res) =>{
@@ -18,13 +25,13 @@ server.get('/cursos',(req, res) =>{
     return res.json(cursos);
 })
 // usando o request body para enviar um json
-server.post('/cursos', (req,res) =>{
+server.post('/cursos',checkCurso, (req,res) =>{
     const {name} = req.body;
     cursos.push(name);
     return res.json(cursos);
 })
 // Fazendo um update, atualizando um curso.
-server.put('/cursos/:index',(req,res)=>{
+server.put('/cursos/:index',checkCurso,(req,res)=>{
     const {index} = req.params;
     const {name} = req.body;
     cursos[index] = name;
